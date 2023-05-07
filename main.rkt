@@ -15,7 +15,12 @@
   (for/list ((row-idx (range (send listbox get-number))))
        (send listbox get-data row-idx)))
 
-(define frame (new frame% [label "GIMP Plugin Boilerplate Generator"]))
+(define frame (new frame%
+                   [label "GIMP Plugin Boilerplate Generator"]
+                   [border 20]
+                   [spacing 5]
+
+                   ))
 
 (define plugin-name-text (new text-field% [parent frame] [label "Plugin Name:"]))
 (define plugin-description-text (new text-field% [parent frame] [label "Plugin Description:"]))
