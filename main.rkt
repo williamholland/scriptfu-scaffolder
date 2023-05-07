@@ -26,12 +26,23 @@
                                           [choices '("TinyScheme")]))
 
 (define (generate-code-button-callback button event)
-    (let* ((language (send generate-code-in-radio get-item-label
-                           (send generate-code-in-radio get-selection)))
-         (plugin-name (send plugin-name-text get-value))
-         (plugin-description (send plugin-description-text get-value))
-         (author-name (send author-name-text get-value)))
-    (generate-code language plugin-name plugin-description author-name)))
+    (let* ([language (send generate-code-in-radio get-item-label
+                           (send generate-code-in-radio get-selection))]
+           [plugin-name (send plugin-name-text get-value)]
+           [plugin-description (send plugin-description-text get-value)]
+           [author-name (send author-name-text get-value)]
+           [file-path (put-file
+                        "Select file to write to"
+                        frame
+                        )])
+           (when file-path
+             (let ([out-str (generate-code language plugin-name plugin-description author-name)])
+               (with-output-to-file file-path #:exists 'replace
+                                    (lambda ()
+                                      (display out-str))))
+
+             (send frame show #f)
+             )))
 
 ;; Create a list to hold the items
 (define choices (list
@@ -93,7 +104,7 @@
   (define proc-name (name->proc-name plugin-name))
   (define year
     (number->string (date-year (seconds->date (current-seconds)))))
-  (displayln (cond
+  (cond
     ((string=? language "TinyScheme")
      (string-append
        "(define (" proc-name " image drawable)\n"
@@ -116,7 +127,7 @@
                            (apply format "  ~a \"~a\" ~a" x))
                          (listbox-get-all-data listbox))
                     "\n")
-       "\n)\n")))))
+       "\n)\n"))))
 
 (define generate-code-button (new button%
                                   [parent frame]
